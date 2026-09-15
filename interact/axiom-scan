@@ -139,6 +139,8 @@ function help() {
     echo -e "  --download <file>          Download a file from scan directory after scan ends"
     echo -e "  --max-runtime <10m|2h|1.5d>  Auto-kill scan after specified duration"
     echo -e "  --preflight-timeout <sec>  Timeout for initial SSH connection (default: 15s)"
+    echo -e "  --preflight-retries <n>    Re-check unreachable instances up to n times before dropping them (default: 6, 0 disables)"
+    echo -e "  --preflight-retry-interval <sec>  Seconds to wait between preflight retries (default: 5)"
     echo -e "  --skip-preflight           Skip SSH health check before scan starts"
     echo -e "  --anew                     Pipe scan output through 'anew' before final save (txt/oG/csv only)"
     echo
@@ -559,6 +561,8 @@ user_specified_config="false"
 local_config="false"
 pre_flight=true
 preflight_timeout=15
+preflight_retries=6
+preflight_retry_interval=5
 max_scan_runtime=0
 cycle_regions="false"
 stdout_only="false"
@@ -675,6 +679,20 @@ do
         if [[ "$arg" == "--preflight-timeout" ]] ; then
             n=$((i+1))
             preflight_timeout=$(echo ${!n})
+            set=true
+            pass+=($i)
+            pass+=($n)
+        fi
+        if [[ "$arg" == "--preflight-retries" ]] ; then
+            n=$((i+1))
+            preflight_retries=$(echo ${!n})
+            set=true
+            pass+=($i)
+            pass+=($n)
+        fi
+        if [[ "$arg" == "--preflight-retry-interval" ]] ; then
+            n=$((i+1))
+            preflight_retry_interval=$(echo ${!n})
             set=true
             pass+=($i)
             pass+=($n)
@@ -1127,7 +1145,33 @@ if [[ $pre_flight == true ]]; then
 fi
 }
 
-preflight_function
+###########################################################################################################
+# Initial preflight with bounded retries: freshly-created fleet hosts often
+# need a few extra seconds before sshd answers, so re-sweep the full selected
+# set until every host responds or the retry budget is exhausted, instead of
+# dropping the still-unreachable ones on the first pass. The mid-scan
+# preflight_function calls stay single-pass.
+#
+if [[ $pre_flight == true ]]; then
+   cp "$tmp/hosts" "$tmp/hosts_all"
+   sort -u "$tmp/hosts_all" -o "$tmp/hosts_all"
+   expected_instances="$(grep -c . "$tmp/hosts_all")"
+   preflight_attempt=0
+   while [ "$expected_instances" -gt 0 ]; do
+      cp "$tmp/hosts_all" "$tmp/hosts"
+      total_instances="$(grep -c . "$tmp/hosts")"
+      interlace_cmd_nobar="$(which interlace) --no-bar --silent -tL $tmp/hosts -threads $total_instances"
+      preflight_function
+      reachable_instances="$(grep -c . "$tmp/hosts")"
+      [ "$reachable_instances" -ge "$expected_instances" ] && break
+      preflight_attempt=$((preflight_attempt+1))
+      [ "$preflight_attempt" -ge "$preflight_retries" ] && break
+      echo -e "${Yellow}Preflight: $reachable_instances/$expected_instances instances reachable, retrying in ${preflight_retry_interval}s ($preflight_attempt/$preflight_retries)...${Color_Off}"
+      sleep "$preflight_retry_interval"
+   done
+else
+   preflight_function
+fi
 
 ###########################################################################################################
 #  Check total instances does not equal zero

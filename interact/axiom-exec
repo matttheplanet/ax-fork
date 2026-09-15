@@ -37,6 +37,8 @@ keep_logs=false
 quick_execution=false
 pre_flight=true
 preflight_timeout=10
+preflight_retries=6
+preflight_retry_interval=5
 
 ###########################################################################################################
 # Help Menu:
@@ -63,6 +65,8 @@ function usage() {
     echo -e "  --quick                       Use faster but less reliable execution mode"
     echo -e "  --skip-preflight              Skip preflight check (don’t remove unreachable instances)"
     echo -e "  --preflight-timeout <sec>     Set SSH timeout in seconds (default: 5)"
+    echo -e "  --preflight-retries <n>       Re-check unreachable instances up to n times before dropping them (default: 6, 0 disables)"
+    echo -e "  --preflight-retry-interval <sec>  Seconds to wait between preflight retries (default: 5)"
     echo
     echo -e "${BWhite}Debug & Logging:${Color_Off}"
     echo -e "  -q, --quiet                   Suppress progress bar and reduce output"
@@ -157,6 +161,20 @@ do
         if [[ "$arg" == "--preflight-timeout" ]] ; then
             n=$((i+1))
             preflight_timeout=$(echo ${!n})
+            set=true
+            pass+=($i)
+            pass+=($n)
+        fi
+        if [[ "$arg" == "--preflight-retries" ]] ; then
+            n=$((i+1))
+            preflight_retries=$(echo ${!n})
+            set=true
+            pass+=($i)
+            pass+=($n)
+        fi
+        if [[ "$arg" == "--preflight-retry-interval" ]] ; then
+            n=$((i+1))
+            preflight_retry_interval=$(echo ${!n})
             set=true
             pass+=($i)
             pass+=($n)
@@ -338,10 +356,29 @@ trap clean_up SIGINT SIGTERM
 #
 if [[ $pre_flight == true ]]; then
  ssh_command_preflight="ssh -F $sshconfig -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o ConnectTimeout=$preflight_timeout"
- $interlace_cmd_silent -c "$ssh_command_preflight _target_ 'echo _target_' >> $tmp/hosts_preflight"
- cat "$tmp/hosts_preflight" | sort -u  > "$tmp/hosts"
- cp "$tmp/hosts_preflight" "$tmp/selected.conf"
- total_instances="$(wc -l "$tmp/hosts" | awk '{ print $1 }')"
+ # Retry unreachable instances instead of dropping them on the first pass:
+ # freshly-created fleet hosts often need a few extra seconds before sshd
+ # answers. Re-sweep the full selected set until every host responds or the
+ # retry budget is exhausted, then proceed with whatever is reachable.
+ cp "$tmp/hosts" "$tmp/hosts_all"
+ sort -u "$tmp/hosts_all" -o "$tmp/hosts_all"
+ expected_instances="$(grep -c . "$tmp/hosts_all")"
+ preflight_attempt=0
+ while [ "$expected_instances" -gt 0 ]; do
+  cp "$tmp/hosts_all" "$tmp/hosts"
+  total_instances="$(grep -c . "$tmp/hosts")"
+  interlace_cmd_silent="$(which interlace) -tL $tmp/hosts --silent -threads $total_instances"
+  : > "$tmp/hosts_preflight"
+  $interlace_cmd_silent -c "$ssh_command_preflight _target_ 'echo _target_' >> $tmp/hosts_preflight"
+  cat "$tmp/hosts_preflight" | sort -u  > "$tmp/hosts"
+  cp "$tmp/hosts" "$tmp/selected.conf"
+  total_instances="$(grep -c . "$tmp/hosts")"
+  [ "$total_instances" -ge "$expected_instances" ] && break
+  preflight_attempt=$((preflight_attempt+1))
+  [ "$preflight_attempt" -ge "$preflight_retries" ] && break
+  echo -e "${Yellow}Preflight: $total_instances/$expected_instances instances reachable, retrying in ${preflight_retry_interval}s ($preflight_attempt/$preflight_retries)...${Color_Off}"
+  sleep "$preflight_retry_interval"
+ done
 fi
 
 ###########################################################################################################
