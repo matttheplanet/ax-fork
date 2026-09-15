@@ -3,6 +3,16 @@
 AXIOM_PATH="$HOME/.axiom"
 
 ###################################################################
+# Returns 0 if TCP port $2 on host $1 is accepting connections, else 1.
+# Uses bash's /dev/tcp plus coreutils 'timeout' so no netcat dependency
+# is introduced on the controller. Third arg is the per-probe timeout in
+# seconds (default 3).
+#
+port_open() {
+    timeout "${3:-3}" bash -c "exec 3<>/dev/tcp/$1/$2" 2>/dev/null
+}
+
+###################################################################
 #  Create Instance is likely the most important provider function :)
 #  needed for init and fleet
 #
@@ -22,7 +32,22 @@ create_instance() {
     ibmcloud is instance-create "$name" "$vpc" "$region" "$profile" "$vpc-subnet-$region" --image "$image_id" --pnac-vni-name "$name"-vni  --pnac-name "$name"-pnac --pnac-vni-sgs "$security_group_name" --user-data @"$user_data_file" 2>&1 >>/dev/null && \
     ibmcloud is floating-ip-reserve "$name"-ip --vni "$name"-vni --in "$name" >>/dev/null
 
-    sleep 260
+    # Wait until the instance is running, has a floating IP, and sshd is
+    # accepting connections on 2266 — instead of a blind 'sleep 260' that
+    # returned before cloud-init/sshd/the floating IP were ready.
+    local max_wait=260 elapsed=0 interval=8 ip state
+    while [ "$elapsed" -lt "$max_wait" ]; do
+        state="$(instances | jq -r ".[] | select(.name==\"$name\") | .status // empty")"
+        ip="$(instance_ip "$name")"
+        if [[ "$state" == "running" && -n "$ip" ]] && port_open "$ip" 2266; then
+            return 0
+        fi
+        sleep "$interval"
+        elapsed=$((elapsed + interval))
+    done
+
+    >&2 echo -e "${BRed}Warning: '$name' was not SSH-ready after ${max_wait}s${Color_Off}"
+    return 1
 }
 
 ###################################################################
@@ -533,7 +558,12 @@ create_instances() {
                 ] | map(select(. != null and . != "")) | .[0] // ""
             )')
 
-            if [[ "$state" == "running" ]]; then
+            # An instance is only ready once it is running, has a floating IP,
+            # and sshd is accepting connections on 2266. Gating on status alone
+            # let fleets run short-handed: VPC reports 'running' before
+            # cloud-init/sshd/the floating IP are up, and the preflight then
+            # pruned the still-unreachable hosts.
+            if [[ "$state" == "running" && -n "$ip" ]] && port_open "$ip" 2266; then
                 # Only announce once per instance
                 if ! grep -q "^$name\$" "$processed_file"; then
                     echo "$name" >> "$processed_file"
@@ -545,10 +575,9 @@ create_instances() {
             fi
         done
 
-        # If all instances are running, we're done
+        # If all instances are SSH-ready, we're done — no blind settle needed.
         if $all_ready; then
             rm -f "$processed_file" "$user_data_file"
-            sleep 30
             return 0
         fi
 
