@@ -18,7 +18,7 @@ source "ibmcloud-vpc" "packer" {
   api_key               = var.ibm_cloud_api_key
   region                = var.physical_region 
   subnet_id             = var.subnet_id
-  vsi_base_image_name     = "ibm-ubuntu-22-04-4-minimal-amd64-4"
+  vsi_base_image_name     = "ibm-ubuntu-24-04-4-minimal-amd64-7"
   communicator            = "ssh"
   vsi_profile             = var.default_size
   ssh_username            = "root"
