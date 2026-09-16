@@ -60,7 +60,7 @@
       "sudo usermod -aG docker op",
 
       "echo 'Installing Interlace'",
-      "git clone https://github.com/codingo/Interlace.git /home/op/recon/interlace && cd /home/op/recon/interlace/ && python3 setup.py install",
+      "git clone https://github.com/codingo/Interlace.git /home/op/recon/interlace && cd /home/op/recon/interlace/ && pip3 install $(pip3 install --help 2>/dev/null | grep -q -- --break-system-packages && echo --break-system-packages) .",
 
       "echo 'Optimizing SSH Connections'",
       "/bin/su -l root -c 'echo \"ClientAliveInterval 60\" | sudo tee -a /etc/ssh/sshd_config'",
@@ -70,6 +70,7 @@
       "/bin/su -l root -c 'echo \"net.nf_conntrack_max = 1048576\" | sudo tee -a /etc/sysctl.conf'",
       "/bin/su -l root -c 'echo \"net.core.somaxconn = 1048576\" | sudo tee -a /etc/sysctl.conf'",
       "/bin/su -l root -c 'echo \"net.ipv4.ip_local_port_range = 1024 65535\" | sudo tee -a /etc/sysctl.conf'",
+      "/bin/su -l root -c 'echo \"kernel.apparmor_restrict_unprivileged_userns = 0\" | sudo tee -a /etc/sysctl.conf'",
       "/bin/su -l root -c 'echo \"1024 65535\" | sudo tee -a /proc/sys/net/ipv4/ip_local_port_range'",
       "chmod 600 /home/op/.ssh/authorized_keys",
 
@@ -117,7 +118,7 @@
       "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/hahwul/dalfox/v2@latest'",
 
       "echo 'Installing dnsvalidator'",
-      "git clone https://github.com/vortexau/dnsvalidator.git /home/op/recon/dnsvalidator && cd /home/op/recon/dnsvalidator/ && sudo python3 setup.py install",
+      "git clone https://github.com/vortexau/dnsvalidator.git /home/op/recon/dnsvalidator && cd /home/op/recon/dnsvalidator/ && sudo pip3 install $(pip3 install --help 2>/dev/null | grep -q -- --break-system-packages && echo --break-system-packages) .",
 
       "echo 'Installing dnsx'",
       "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest'",
@@ -198,7 +199,7 @@
       "echo 'Installing trufflehog'",
       "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/trufflehog/Dockerfile -t axiom/trufflehog || true'",
       "echo 'Installing wafw00f'",
-      "cd /tmp && git clone https://github.com/EnableSecurity/wafw00f && cd wafw00f && sudo python3 setup.py install",
+      "cd /tmp && git clone https://github.com/EnableSecurity/wafw00f && cd wafw00f && sudo pip3 install $(pip3 install --help 2>/dev/null | grep -q -- --break-system-packages && echo --break-system-packages) .",
 
       "echo 'Removing unneeded Docker images'",
       "/bin/su -l op -c 'docker image prune -f'",
