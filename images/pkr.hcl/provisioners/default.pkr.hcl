@@ -7,7 +7,7 @@
     execute_command = "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'"
     inline = [
         "echo 'Waiting for cloud-init to finish, this can take a few minutes please be patient...'",
-        "/usr/bin/cloud-init status --wait",
+        "/usr/bin/cloud-init status --wait || true",
 
         "fallocate -l 2G /swap && chmod 600 /swap && mkswap /swap && swapon /swap",
         "echo '/swap none swap sw 0 0' | sudo tee -a /etc/fstab",
@@ -37,7 +37,7 @@
 
         "echo 'Moving Config files'",
         "mv /tmp/configs/sudoers /etc/sudoers",
-        "pkexec chown root:root /etc/sudoers /etc/sudoers.d -R",
+        "pkexec chown root:root /etc/sudoers /etc/sudoers.d -R || true",
         "mv /tmp/configs/bashrc /home/op/.bashrc",
         "mv /tmp/configs/zshrc /home/op/.zshrc",
         "mv /tmp/configs/sshd_config /etc/ssh/sshd_config",
@@ -46,7 +46,7 @@
         "mv /tmp/configs/tmux-splash.sh /home/op/bin/tmux-splash.sh",
         "/bin/su -l op -c 'sudo chmod 600 /home/op/.ssh/authorized_keys'",
         "chown -R op:users /home/op",
-        "sudo service sshd restart",
+        "sudo service sshd restart || true",
         "chmod +x /etc/update-motd.d/00-header",
 
         "echo 'Installing Golang ${var.golang_version}'",
@@ -199,7 +199,7 @@
         "/bin/su -l op -c '/usr/local/go/bin/go install -v github.com/projectdiscovery/notify/cmd/notify@latest'",
 
         "echo 'Installing nuclei'",
-        "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest && /home/op/go/bin/nuclei'",
+        "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest && (/home/op/go/bin/nuclei || true)'",
 
         "echo 'Installing OpenRedireX'",
         "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/openredirex/Dockerfile -t axiom/openredirex'",
@@ -248,6 +248,6 @@
         "chown -R op:users /home/op",
         "chown root:root /etc/sudoers /etc/sudoers.d -R"
     ]
-    inline_shebang = "/bin/sh -x"
+    inline_shebang = "/bin/sh -ex"
   }
 }
