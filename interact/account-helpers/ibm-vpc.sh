@@ -102,18 +102,23 @@ function create_apikey {
 }
 
 function specs {
-    echo -e "${BGreen}Printing available resource groups...\n${Color_Off}"
+    echo -e "${BGreen}Printing available resource groups (use the NAME column, not the ID)...\n${Color_Off}"
     ibmcloud resource groups
-    echo -e -n "${BGreen}Please enter the resource groups to use (press enter for 'Default'): \n>> ${Color_Off}"
+    echo -e -n "${BGreen}Please enter the resource group NAME to use (press enter for 'Default'): \n>> ${Color_Off}"
     read resource_group
     resource_group=${resource_group:-Default}
 
-    echo -e "${Green}Printing available regions..\n${Color_Off}"
+    echo -e "${Green}Printing available regions (use the Name column, e.g. us-south)..\n${Color_Off}"
     ibmcloud regions
-    echo -e -n "${BGreen}Please enter your default region (press enter for 'us-south'): \n>> ${Color_Off}"
+    echo -e -n "${BGreen}Please enter your region NAME (press enter for 'us-south'): \n>> ${Color_Off}"
     read region
     region=${region:-us-south}
-    ibmcloud target -r $region -g $resource_group
+    # Let ibmcloud validate the region/resource-group names; don't silently proceed on a bad value.
+    if ! ibmcloud target -r "$region" -g "$resource_group"; then
+        echo -e "${BRed}Could not target region '$region' / resource group '$resource_group'.${Color_Off}"
+        echo -e "${BRed}Use the NAME (not the ID) exactly as shown in the lists above, then re-run this setup.${Color_Off}"
+        exit 1
+    fi
 
     echo -e "${Green}Printing available zones in region selected..\n${Color_Off}"
     ibmcloud is zones
@@ -140,7 +145,7 @@ function specs {
 function setVPC {
     echo -e "${Green}Printing IBM Cloud VPCs ${Color_Off}"
     ibmcloud is vpcs
-    echo -e -n "${Green}Enter the VPC name you like to use (press enter to create a new one): \n>> ${Color_Off}"
+    echo -e -n "${Green}Enter the VPC NAME to use (use the Name column above), or press enter to create a new axiom VPC: \n>> ${Color_Off}"
     read vpc
     if [[ "$vpc" == "" ]]; then
      name="axiom-$(date +%m-%d-%H-%M-%S-%1N)"
@@ -158,6 +163,16 @@ function setVPC {
     ibmcloud is subnet-create $subnet_name-$i $vpc --ipv4-address-count 256 --zone $region-$i --output json --resource-group-name $resource_group >/dev/null 2>&1
    done
    subnet_id=$(ibmcloud is subnets --vpc $vpc --output json | jq -r '.[] | select(.name == "'$subnet_name-1'") | .id')
+
+   # Guard: a broken/empty subnet_id is the most common cause of a build landing in the
+   # wrong (default) VPC and being unusable. Fail loudly instead of saving a bad profile.
+   if [[ -z "$subnet_id" ]]; then
+     echo -e "${BRed}Error: could not find subnet '$subnet_name-1' in VPC '$vpc' (subnet_id is empty).${Color_Off}"
+     echo -e "${BRed}This usually happens when an existing VPC was selected that has no axiom-named subnets,${Color_Off}"
+     echo -e "${BRed}or subnet creation failed (quota/permissions). Re-run and press enter at the VPC prompt${Color_Off}"
+     echo -e "${BRed}to create a fresh axiom VPC + subnets, or create a '$subnet_name-1' subnet first.${Color_Off}"
+     exit 1
+   fi
 
    echo -e "${BGreen}Printing Available Security Groups for VPC $vpc${Color_Off}"
    ibmcloud is security-groups --vpc $vpc --resource-group-name $resource_group
