@@ -50,7 +50,7 @@
         "mv /tmp/configs/tmux-splash.sh /home/op/bin/tmux-splash.sh",
         "/bin/su -l op -c 'sudo chmod 600 /home/op/.ssh/authorized_keys'",
         "chown -R op:users /home/op",
-        "sudo service sshd restart",
+        "sudo service ssh restart",
         "chmod +x /etc/update-motd.d/00-header",
 
         "echo 'Installing Golang {{ user `golang_version` }}'",
