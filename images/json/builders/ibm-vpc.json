@@ -10,7 +10,7 @@
       "vsi_profile": "{{user `default_size`}}",
       "ssh_username": "ubuntu",
       "image_name": "{{user `snapshot_name`}}",
-      "timeout": "50m"
+      "timeout": "90m"
     }
   ]
 }
