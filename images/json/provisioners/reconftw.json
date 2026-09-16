@@ -109,11 +109,9 @@
         "curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o '/tmp/awscliv2.zip' && cd /tmp && unzip awscliv2.zip && sudo ./aws/install",
 
         "echo 'Installing commix'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/commix/Dockerfile -t axiom/commix'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/commix/Dockerfile -t axiom/commix || true'",
         "echo 'Installing Corsy'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/corsy/Dockerfile -t axiom/corsy'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/corsy/Dockerfile -t axiom/corsy || true'",
         "echo 'Installing crlfuzz'",
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest'",
 
@@ -200,8 +198,7 @@
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest'",
 
         "echo 'Installing trufflehog'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/trufflehog/Dockerfile -t axiom/trufflehog'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/trufflehog/Dockerfile -t axiom/trufflehog || true'",
         "echo 'Installing wafw00f'",
         "cd /tmp && git clone https://github.com/EnableSecurity/wafw00f && cd wafw00f && sudo python3 setup.py install",
 

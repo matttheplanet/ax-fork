@@ -118,11 +118,9 @@
         "wget -q -O /tmp/DNSCewl https://github.com/codingo/DNSCewl/raw/master/DNScewl && mv /tmp/DNSCewl /usr/bin/DNSCewl && chmod +x /usr/bin/DNSCewl",
 
         "echo 'Installing dnsgen'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/dnsgen/Dockerfile -t axiom/dnsgen'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/dnsgen/Dockerfile -t axiom/dnsgen || true'",
         "echo 'Installing dnsrecon'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/dnsrecon/Dockerfile -t axiom/dnsrecon'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/dnsrecon/Dockerfile -t axiom/dnsrecon || true'",
         "echo 'Installing dnsvalidator'",
         "git clone https://github.com/vortexau/dnsvalidator.git /home/op/recon/dnsvalidator && cd /home/op/recon/dnsvalidator/ && sudo pip3 install $(pip3 install --help 2>/dev/null | grep -q -- --break-system-packages && echo --break-system-packages) .",
 
@@ -181,8 +179,7 @@
         "/bin/su -l op -c '/usr/local/go/bin/go install github.com/tomnomnom/hacks/kxss@latest'",
 
         "echo 'Installing LinkFinder'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/linkfinder/Dockerfile -t axiom/linkfinder'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/linkfinder/Dockerfile -t axiom/linkfinder || true'",
         "echo 'Installing masscan'",
         "apt install masscan -y -qq",
 
@@ -206,11 +203,9 @@
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest && /home/op/go/bin/nuclei'",
 
         "echo 'Installing OpenRedireX'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/openredirex/Dockerfile -t axiom/openredirex'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/openredirex/Dockerfile -t axiom/openredirex || true'",
         "echo 'Installing ParamSpider'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/paramspider/Dockerfile -t axiom/paramspider'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/paramspider/Dockerfile -t axiom/paramspider || true'",
         "echo 'Installing puredns'",
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/d3mondev/puredns/v2@latest'",
 

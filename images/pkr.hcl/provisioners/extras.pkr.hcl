@@ -99,8 +99,7 @@
         "/bin/su -l op -c '/usr/local/go/bin/go install github.com/tomnomnom/anew@latest'",
 
         "echo 'Installing assetfinder'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/assetfinder/Dockerfile -t axiom/assetfinder'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/assetfinder/Dockerfile -t axiom/assetfinder || true'",
         "echo 'Installing Amass'",
         "wget -q -O /tmp/amass.zip https://github.com/OWASP/Amass/releases/download/v3.21.2/amass_linux_amd64.zip && cd /tmp/ && unzip /tmp/amass.zip && mv /tmp/amass_linux_amd64/amass /usr/bin/amass",
 
@@ -114,20 +113,17 @@
         "/bin/su -l op -c 'git clone https://github.com/matttheplanet/ax-fork.git /home/op/.axiom && cd /home/op/.axiom/interact && ./axiom-configure --shell zsh --unattended --setup'",
 
         "echo 'Installing cero'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/cero/Dockerfile -t axiom/cero'",
-        
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/cero/Dockerfile -t axiom/cero || true'",        
         "echo 'Installing chaos-client'",
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/chaos-client/cmd/chaos@latest'",
 
         "echo 'Installing commix'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/commix/Dockerfile -t axiom/commix'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/commix/Dockerfile -t axiom/commix || true'",
         "echo 'Installing concurl'",
         "/bin/su -l op -c '/usr/local/go/bin/go install github.com/tomnomnom/hacks/concurl@latest'",
 
         "echo 'Installing Corsy'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/corsy/Dockerfile -t axiom/corsy'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/corsy/Dockerfile -t axiom/corsy || true'",
         "echo 'Installing crlfuzz'",
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest'",
 
@@ -141,11 +137,9 @@
         "wget -q -O /tmp/DNSCewl https://github.com/codingo/DNSCewl/raw/master/DNScewl && mv /tmp/DNSCewl /usr/bin/DNSCewl && chmod +x /usr/bin/DNSCewl",
 
         "echo 'Installing dnsgen'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/dnsgen/Dockerfile -t axiom/dnsgen'",
-        
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/dnsgen/Dockerfile -t axiom/dnsgen || true'",        
         "echo 'Installing dnsrecon'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/dnsrecon/Dockerfile -t axiom/dnsrecon'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/dnsrecon/Dockerfile -t axiom/dnsrecon || true'",
         "echo 'Installing dnsvalidator'",
         "git clone https://github.com/vortexau/dnsvalidator.git /home/op/recon/dnsvalidator && cd /home/op/recon/dnsvalidator/ && sudo python3 setup.py install",
 
@@ -195,8 +189,7 @@
         "wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && cd /tmp/ && sudo apt install -y /tmp/chrome.deb -qq && apt --fix-broken install -qq",
 
         "echo 'Installing gorgo'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/gorgo/Dockerfile -t axiom/gorgo'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/gorgo/Dockerfile -t axiom/gorgo || true'",
         "echo 'Installing gospider'",
         "/bin/su -l op -c '/usr/local/go/bin/go install github.com/jaeles-project/gospider@latest'",
 
@@ -225,8 +218,7 @@
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest'",
         
         "echo 'Installing ipcdn'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/ipcdn/Dockerfile -t axiom/ipcdn'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/ipcdn/Dockerfile -t axiom/ipcdn || true'",
         "echo 'Installing jaeles'",
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/jaeles-project/jaeles@latest'",
 
@@ -240,8 +232,7 @@
         "/bin/su -l op -c '/usr/local/go/bin/go install github.com/tomnomnom/hacks/kxss@latest'",
 
         "echo 'Installing LinkFinder'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/linkfinder/Dockerfile -t axiom/linkfinder'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/linkfinder/Dockerfile -t axiom/linkfinder || true'",
         "echo 'Installing masscan'",
         "apt install masscan -y -qq",
 
@@ -262,11 +253,9 @@
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest && (/home/op/go/bin/nuclei || true)'",
 
         "echo 'Installing OpenRedireX'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/openredirex/Dockerfile -t axiom/openredirex'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/openredirex/Dockerfile -t axiom/openredirex || true'",
         "echo 'Installing ParamSpider'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/paramspider/Dockerfile -t axiom/paramspider'",
-
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/paramspider/Dockerfile -t axiom/paramspider || true'",
         "echo 'Installing puredns'",
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/d3mondev/puredns/v2@latest'",
 
@@ -304,8 +293,7 @@
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest'",
         
         "echo 'Installing trufflehog'",
-        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/trufflehog/Dockerfile -t axiom/trufflehog'",
-        
+        "/bin/su -l op -c 'docker image build - < /home/op/lists/axiom-dockerfiles/trufflehog/Dockerfile -t axiom/trufflehog || true'",        
         "echo 'Installing unimap'",
         "wget -q -O /tmp/unimap https://github.com/Edu4rdSHL/unimap/releases/download/0.5.1/unimap-linux && mv /tmp/unimap /usr/bin/unimap && chmod +x /usr/bin/unimap",
 
