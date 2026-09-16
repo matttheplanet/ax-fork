@@ -119,10 +119,10 @@ read size
          size="t2.micro"
         fi
 
-echo -e -n "${Green}Please enter your default disk size in GB (you can always change this later with axiom-disks select \$disk_size): Default '20', press enter \n>> ${Color_Off}"
+echo -e -n "${Green}Please enter your default disk size in GB (you can always change this later with axiom-disks select \$disk_size): Default '50', press enter \n>> ${Color_Off}"
 read disk_size
 if [[ "$disk_size" == "" ]]; then
-  disk_size="20"
+  disk_size="50"
   echo -e "${Blue}Selected default option '20'${Color_Off}"
 fi
 
