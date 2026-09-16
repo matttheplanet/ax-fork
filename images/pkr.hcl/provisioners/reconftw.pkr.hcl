@@ -100,7 +100,7 @@
       "/bin/su -l op -c '/usr/local/go/bin/go install github.com/owasp-amass/amass/v3/...@master'",
 
       "echo 'Installing ax framework'",
-      "/bin/su -l op -c 'git clone https://github.com/attacksurge/ax.git /home/op/.axiom && cd /home/op/.axiom/interact && ./axiom-configure --shell zsh --unattended --setup'",
+      "/bin/su -l op -c 'git clone https://github.com/matttheplanet/ax-fork.git /home/op/.axiom && cd /home/op/.axiom/interact && ./axiom-configure --shell zsh --unattended --setup'",
 
       "echo 'Installing awscli'",
       "curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o '/tmp/awscliv2.zip' && cd /tmp && unzip awscliv2.zip && sudo ./aws/install",
