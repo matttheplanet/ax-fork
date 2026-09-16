@@ -37,7 +37,7 @@
 
         "echo 'Moving Config files'",
         "mv /tmp/configs/sudoers /etc/sudoers",
-        "pkexec chown root:root /etc/sudoers /etc/sudoers.d -R || true",
+        "chown root:root /etc/sudoers /etc/sudoers.d -R",
         "mv /tmp/configs/bashrc /home/op/.bashrc",
         "mv /tmp/configs/zshrc /home/op/.zshrc",
         "mv /tmp/configs/sshd_config /etc/ssh/sshd_config",
