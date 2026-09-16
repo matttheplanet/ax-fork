@@ -228,13 +228,13 @@
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest'",
 
         "echo 'Installing trufflehog'",
-        "/bin/su -l op -c 'curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/master/scripts/install.sh | sudo sh -s -- -b /usr/local/bin'",
+        "/bin/su -l op -c 'curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sudo sh -s -- -b /usr/local/bin'",
 
         "echo 'Installing waybackurls'",
         "/bin/su -l op -c '/usr/local/go/bin/go install github.com/tomnomnom/waybackurls@latest'",
 
         "echo 'Installing webscreenshot'",
-        "/bin/su -l op -c 'pip3 install $(pip3 install --help 2>/dev/null | grep -q -- --break-system-packages && echo --break-system-packages) webscreenshot'",
+        "pip3 install $(pip3 install --help 2>/dev/null | grep -q -- --break-system-packages && echo --break-system-packages) webscreenshot",
 
         "echo 'Removing unneeded Docker images'",
         "/bin/su -l op -c 'docker image prune -f'",

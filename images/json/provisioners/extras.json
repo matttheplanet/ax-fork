@@ -308,7 +308,7 @@
         "git clone https://github.com/xnl-h4ck3r/waymore.git /home/op/recon/ && cd /home/op/recon/waymore && sudo python3 setup.py install && sudo pip3 install -r requirements.txt",
 
         "echo 'Installing webscreenshot'",
-        "/bin/su -l op -c 'pip3 install webscreenshot'",
+        "pip3 install $(pip3 install --help 2>/dev/null | grep -q -- --break-system-packages && echo --break-system-packages) webscreenshot",
 
         "echo 'Installing wpscan'",
         "gem install wpscan",
