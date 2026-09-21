@@ -120,6 +120,15 @@ function specs {
         exit 1
     fi
 
+    # Resolve the resource group's ID (GUID). The user selects the RG by NAME, but
+    # the ibmcloud-vpc Packer builder / provider need the ID — persist both so the
+    # image build and provider don't fall back to the default resource group.
+    resource_group_id=$(ibmcloud resource group "$resource_group" --id 2>/dev/null)
+    if [[ -z "$resource_group_id" ]]; then
+        echo -e "${BRed}Could not resolve the ID for resource group '$resource_group'.${Color_Off}"
+        exit 1
+    fi
+
     echo -e "${Green}Printing available zones in region selected..\n${Color_Off}"
     ibmcloud is zones
     echo -e -n "${BGreen}Please enter your default zone for $region (press enter for '$region-1'): \n>> ${Color_Off}"
@@ -206,7 +215,7 @@ function setVPC {
 }
 
 function setprofile {
-    data="{\"ibm_cloud_api_key\":\"$ibm_cloud_api_key\",\"default_size\":\"$profile\",\"resource_group\":\"$resource_group\",\"physical_region\":\"$region\",\"region\":\"$zone\",\"provider\":\"ibm-vpc\",\"vpc\":\"$vpc\",\"security_group\":\"$group_name\",\"subnet_id\":\"$subnet_id\"}"
+    data="{\"ibm_cloud_api_key\":\"$ibm_cloud_api_key\",\"default_size\":\"$profile\",\"resource_group\":\"$resource_group\",\"resource_group_id\":\"$resource_group_id\",\"physical_region\":\"$region\",\"region\":\"$zone\",\"provider\":\"ibm-vpc\",\"vpc\":\"$vpc\",\"security_group\":\"$group_name\",\"subnet_id\":\"$subnet_id\"}"
     echo -e "${BGreen}Profile settings below:${Color_Off}"
     echo $data | jq ' .ibm_cloud_api_key = "********************************************"'
     echo -e "${BWhite}Press enter to save these to a new profile, type 'r' to start over.${Color_Off}"

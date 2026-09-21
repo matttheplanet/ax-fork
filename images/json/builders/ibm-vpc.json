@@ -5,6 +5,7 @@
       "api_key": "{{user `ibm_cloud_api_key`}}",
       "region": "{{user `physical_region`}}",
       "subnet_id": "{{user `subnet_id`}}",
+      "resource_group_id": "{{user `resource_group_id`}}",
       "vsi_base_image_name": "ibm-ubuntu-24-04-4-minimal-amd64-7",
       "communicator": "ssh",
       "vsi_profile": "{{user `default_size`}}",
