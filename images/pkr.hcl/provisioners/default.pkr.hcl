@@ -17,7 +17,7 @@
         "DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew dist-upgrade -qq",
 
         "echo 'Installing fail2ban ufw net-tools zsh zsh-syntax-highlighting zsh-autosuggestions jq build-essential python3-pip unzip git p7zip libpcap-dev rubygems ruby-dev grc'",
-        "sudo apt install fail2ban ufw net-tools zsh zsh-syntax-highlighting zsh-autosuggestions jq build-essential python3-pip unzip git p7zip libpcap-dev rubygems ruby-dev grc -y -qq",
+        "sudo apt install fail2ban ufw net-tools zsh zsh-syntax-highlighting zsh-autosuggestions jq build-essential python3-pip unzip git p7zip libpcap-dev rubygems ruby-dev grc libblas3 liblapack3 -y -qq",
         "ufw allow 22",
         "ufw allow 2266",
         "ufw --force enable",
@@ -193,6 +193,9 @@
         "echo 'Installing nmap'",
 	"sudo apt-get -qy --no-install-recommends install alien",
 	"/bin/su -l op -c 'wget https://nmap.org/dist/nmap-7.94-1.x86_64.rpm -O /home/op/recon/nmap.rpm && cd /home/op/recon/ && sudo alien ./nmap.rpm && sudo dpkg -i ./nmap*.deb'",
+	"# alien+dpkg-i does not resolve deps; the nmap.org build links libblas.so.3 (also installed above). Fix any unmet deps so nmap loads at runtime.",
+	"sudo apt-get -f install -y -qq",
+	"nmap --version",
 
         "echo 'Installing notify'",
         "/bin/su -l op -c '/usr/local/go/bin/go install -v github.com/projectdiscovery/notify/cmd/notify@latest'",
