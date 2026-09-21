@@ -249,6 +249,9 @@
         "echo 'Installing nmap'",
 	"sudo apt-get -qy --no-install-recommends install alien",
 	"/bin/su -l op -c 'wget https://nmap.org/dist/nmap-7.94-1.x86_64.rpm -O /home/op/recon/nmap.rpm && cd /home/op/recon/ && sudo alien ./nmap.rpm && sudo dpkg -i ./nmap*.deb'",
+	"sudo apt-get install -y -qq libblas3 liblapack3",
+	"sudo apt-get -f install -y -qq",
+	"nmap --version",
 
         "echo 'Installing nuclei'",
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest && (/home/op/go/bin/nuclei || true)'",
