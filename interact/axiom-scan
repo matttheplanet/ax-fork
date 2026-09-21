@@ -288,9 +288,13 @@ clean_up() {
     echo -e "${BGreen}output: ${Color_Off}[${BBlue} $(realpath $outfile) ${Color_Off}]${BGreen} | ${BGreen}log: ${Color_Off}[${BBlue} "$AXIOM_PATH/logs/$uid" ${Color_Off}]${BGreen} | ${BGreen}remote: ${Color_Off}[${BBlue} "/home/op/scan/$uid" ${Color_Off}] ${BGreen} |"
     echo -e "${BGreen}command: ${Color_Off}[${BBlue} $command ${Color_Off}]${BGreen} | ${BGreen}ext: ${Color_Off}[${BBlue} "$ext" ${Color_Off}]${BGreen} | ${BGreen}threads: ${Color_Off}[${BBlue} "$threads" ${Color_Off}]${BGreen}"
     rm -r $socket_tmp >/dev/null 2>&1
-    stty sane
-    tput init
-    exit
+    # Terminal reset is cosmetic. In a non-interactive context (no TTY, e.g. run
+    # as a subprocess) `tput init` fails and a bare `exit` would inherit that
+    # non-zero status, making a fully-successful scan look failed to the caller.
+    # Keep these best-effort and exit 0 so cleanup never sets the exit code.
+    stty sane 2>/dev/null || true
+    tput init 2>/dev/null || true
+    exit 0
 }
 
 ###########################################################################################################
