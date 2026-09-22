@@ -249,7 +249,6 @@
 
         "echo 'Installing nmap'",
 	"sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nmap",
-	"sudo apt-get install -y -qq libblas3 liblapack3",
 	"nmap --version",
 
         "echo 'Installing nuclei'",
