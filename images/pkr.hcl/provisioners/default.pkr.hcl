@@ -191,10 +191,7 @@
         "/bin/su -l op -c 'GO111MODULE=on /usr/local/go/bin/go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest'",
 
         "echo 'Installing nmap'",
-	"sudo apt-get -qy --no-install-recommends install alien",
-	"/bin/su -l op -c 'wget https://nmap.org/dist/nmap-7.94-1.x86_64.rpm -O /home/op/recon/nmap.rpm && cd /home/op/recon/ && sudo alien ./nmap.rpm && sudo dpkg -i ./nmap*.deb'",
-	"# alien+dpkg-i does not resolve deps; the nmap.org build links libblas.so.3 (also installed above). Fix any unmet deps so nmap loads at runtime.",
-	"sudo apt-get -f install -y -qq",
+	"sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nmap",
 	"nmap --version",
 
         "echo 'Installing notify'",
