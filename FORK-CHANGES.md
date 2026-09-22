@@ -20,7 +20,9 @@ git log --oneline upstream/master..master
   build loudly if nmap still can't load) — applied to **all four** provisioners
   (default / extras / reconftw / barebones).
 - **Ubuntu 24.04 base** (`16c132b`) — move IBM VPC to 24.04; make the default
-  provisioner version-agnostic.
+  provisioner version-agnostic. DigitalOcean (`ubuntu-24-04-x64`) and AWS
+  (AMI filter `ubuntu-noble-24.04`) are also on 24.04 so all builders share the
+  same base and provisioner assumptions.
 - **24.04 compatibility** (`d6177ef`) — allow the Chrome sandbox; make
   reconftw/extras/barebones pip installs 24.04-safe.
 - **Go 1.25** (`82b214f`) — bump Go 1.23.0 → 1.25.0.

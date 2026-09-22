@@ -5,7 +5,7 @@
       "ssh_username": "root",
       "snapshot_name": "{{ user `snapshot_name` }}",
       "api_token": "{{ user `do_key` }}",
-      "image": "ubuntu-22-04-x64",
+      "image": "ubuntu-24-04-x64",
       "region": "{{ user `region`  }}",
       "size": "{{ user `default_size` }}"
     }

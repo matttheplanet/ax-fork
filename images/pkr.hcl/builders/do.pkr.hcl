@@ -18,7 +18,7 @@ source "digitalocean" "packer" {
   ssh_username  = "root"
   snapshot_name = var.snapshot_name
   api_token     = var.do_key
-  image         = "ubuntu-22-04-x64"
+  image         = "ubuntu-24-04-x64"
   region        = var.region
   size          = var.default_size
 }
