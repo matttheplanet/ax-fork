@@ -291,12 +291,16 @@ sshconfig="$tmp/sshconfig"
 #  of creating new TCP connections and negotiating the secure connection is eliminated. This allow us to do
 #  subsequent SSH exec operations ( like downloading results etc ) with no additional overhead.
 #
-mkdir -p "$tmp/sockets"
-socket_tmp=$(echo "$tmp/sockets")
+# Keep the SSH ControlMaster socket path short + length-independent (sun_path
+# limit ~104 chars): a short per-run dir + the fixed-width %C connection hash,
+# instead of $tmp/sockets/<ip> which grows with IPv6 / long paths and can
+# overflow (unix_listener "too long for Unix domain socket").
+socket_tmp="$AXIOM_PATH/tmp/.s/$$"
+mkdir -p "$socket_tmp"
 cat <<EOT >> $(echo $sshconfig)
 Host *
     ControlMaster auto
-    ControlPath $socket_tmp/%h
+    ControlPath $socket_tmp/%C
     ControlPersist 600
 EOT
 
